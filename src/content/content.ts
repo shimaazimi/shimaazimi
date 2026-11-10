@@ -227,7 +227,6 @@ export const services = {
     },
   ] as { name: Text; detail: Text }[],
   cta: { en: 'Tell me about your idea', fa: 'ایده‌ات را برایم بنویس' } as Text,
-  subject: 'Project idea',
 };
 
 export const contact = {

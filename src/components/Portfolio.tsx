@@ -10,6 +10,7 @@ import { bus, STOPS } from '@/lib/bus';
 import { loadGsap, prefersReducedMotion } from '@/lib/gsap';
 import Counter from './Counter';
 import PerfReadout from './PerfReadout';
+import ProjectRequest from './ProjectRequest';
 
 const IceScene = dynamic(() => import('./scene/IceScene'), { ssr: false });
 
@@ -181,7 +182,7 @@ export default function Portfolio() {
             <p className="stack">{identity.stack}</p>
             <div className="hero-actions">
               <a className="chip primary" href="#work">{ui.seeWork[lang]}</a>
-              <a className="chip" href="#services">{ui.startProject[lang]}</a>
+              <a className="chip" href="#request">{ui.startProject[lang]}</a>
               {scene === 'on' ? <button className="chip quiet" type="button" onClick={replay}>{ui.replay[lang]}</button> : null}
             </div>
           </div>
@@ -285,8 +286,10 @@ export default function Portfolio() {
               </li>
             ))}
           </ol>
-          <a className="chip primary services-cta reveal" href={`mailto:${contact.email}?subject=${encodeURIComponent(services.subject)}`}>{services.cta[lang]}</a>
+          <a className="chip primary services-cta reveal" href="#request">{services.cta[lang]}</a>
         </section>
+
+        <ProjectRequest lang={lang} />
 
         <section className="contact" id="contact" data-stop>
           <p className="kicker reveal">{contact.kicker[lang]}</p>

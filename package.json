@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev -p 3000",
+    "dev": "next dev -p 3100",
     "build": "next build",
-    "start": "npx serve@14 out -l 3000"
+    "start": "npx serve@14 out -l 3100"
   },
   "dependencies": {
     "@react-three/fiber": "^9.8.2",
