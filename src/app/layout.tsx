@@ -1,9 +1,11 @@
 import type { Metadata, Viewport } from 'next';
-import { Sora, Vazirmatn } from 'next/font/google';
+import localFont from 'next/font/local';
 import './globals.css';
 
-const sora = Sora({ subsets: ['latin'], weight: ['200', '300', '400', '600'], variable: '--font-latin', display: 'swap' });
-const vazirmatn = Vazirmatn({ subsets: ['arabic', 'latin'], weight: ['200', '300', '400', '600'], variable: '--font-fa', display: 'swap' });
+// Shipped with the site, so neither the build nor Iranian visitors depend on Google Fonts
+const sora = localFont({ src: './fonts/sora-latin-wght-normal.woff2', weight: '100 800', variable: '--font-latin', display: 'swap' });
+// Only the Persian glyphs ship. Without a generated fallback face, Latin words in Persian text fall through to Sora.
+const vazirmatn = localFont({ src: './fonts/vazirmatn-arabic-wght-normal.woff2', weight: '100 900', variable: '--font-fa', display: 'swap', adjustFontFallback: false });
 
 export const metadata: Metadata = {
   title: 'Shima Azimi — Frontend Engineer',

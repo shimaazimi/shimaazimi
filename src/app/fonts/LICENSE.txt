@@ -1,0 +1,2 @@
+Sora and Vazirmatn are licensed under the SIL Open Font License 1.1.
+Files from @fontsource-variable/sora and @fontsource-variable/vazirmatn 5.3.0.
