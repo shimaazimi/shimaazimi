@@ -1,4 +1,4 @@
-name: Deploy to GitHub Pages
+name: Deploy to server
 
 on:
   push:
@@ -7,15 +7,13 @@ on:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 concurrency:
-  group: pages
+  group: deploy
   cancel-in-progress: true
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -25,16 +23,28 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: out
 
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - id: deployment
-        uses: actions/deploy-pages@v4
+      - name: Set up SSH
+        env:
+          SSH_KEY: ${{ secrets.SSH_KEY }}
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_PORT: ${{ secrets.SSH_PORT || '22' }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$SSH_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -p "$SSH_PORT" -H "$SSH_HOST" >> ~/.ssh/known_hosts
+
+      # Upload to a fresh folder, then switch the live link in one step, so visitors never see a half-copied site
+      - name: Upload and switch
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_PORT: ${{ secrets.SSH_PORT || '22' }}
+          SITE_DIR: /var/www/shimaazimi.ir
+        run: |
+          RELEASE="$SITE_DIR/releases/$(date +%Y%m%d%H%M%S)-${GITHUB_SHA::7}"
+          SSH="ssh -i ~/.ssh/deploy_key -p $SSH_PORT -o BatchMode=yes"
+          $SSH "$SSH_USER@$SSH_HOST" "mkdir -p '$RELEASE'"
+          rsync -az --delete -e "$SSH" out/ "$SSH_USER@$SSH_HOST:$RELEASE/"
+          $SSH "$SSH_USER@$SSH_HOST" "ln -sfn '$RELEASE' '$SITE_DIR/current' && cd '$SITE_DIR/releases' && ls -1t | tail -n +6 | xargs -r rm -rf"
