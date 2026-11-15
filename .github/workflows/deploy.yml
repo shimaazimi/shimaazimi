@@ -36,7 +36,15 @@ jobs:
             [ -n "${!v}" ] || { echo "::error::Secret $v is missing or empty"; exit 1; }
           done
           install -m 700 -d ~/.ssh
-          printf '%s\n' "$SSH_KEY" > ~/.ssh/deploy_key
+          # Pasting into a web form can turn line breaks into Windows ones or join them. Rebuild the key from its base64 body.
+          body=$(printf '%s' "$SSH_KEY" | tr -d '\r' | sed -e 's/-----BEGIN OPENSSH PRIVATE KEY-----//' -e 's/-----END OPENSSH PRIVATE KEY-----//' | tr -d ' \n\t')
+          echo "::notice::Key body is ${#body} characters (an ed25519 key has 344)"
+          {
+            echo '-----BEGIN OPENSSH PRIVATE KEY-----'
+            printf '%s' "$body" | fold -w 70
+            echo
+            echo '-----END OPENSSH PRIVATE KEY-----'
+          } > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
           if ! ssh-keygen -y -f ~/.ssh/deploy_key > ~/.ssh/deploy_key.pub 2> ~/.ssh/keyerr; then
             echo "::error::SSH_KEY is not a valid private key: $(tr '\n' ' ' < ~/.ssh/keyerr)"
