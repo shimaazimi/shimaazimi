@@ -28,12 +28,25 @@ jobs:
         env:
           SSH_KEY: ${{ secrets.SSH_KEY }}
           SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USER: ${{ secrets.SSH_USER }}
           SSH_PORT: ${{ secrets.SSH_PORT || '22' }}
         run: |
+          # Failures are written as annotations, which show on the run page without signing in
+          for v in SSH_KEY SSH_HOST SSH_USER; do
+            [ -n "${!v}" ] || { echo "::error::Secret $v is missing or empty"; exit 1; }
+          done
           install -m 700 -d ~/.ssh
           printf '%s\n' "$SSH_KEY" > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
-          ssh-keyscan -p "$SSH_PORT" -H "$SSH_HOST" >> ~/.ssh/known_hosts
+          if ! ssh-keygen -y -f ~/.ssh/deploy_key > ~/.ssh/deploy_key.pub 2> ~/.ssh/keyerr; then
+            echo "::error::SSH_KEY is not a valid private key: $(tr '\n' ' ' < ~/.ssh/keyerr)"
+            exit 1
+          fi
+          echo "::notice::Key fingerprint $(ssh-keygen -lf ~/.ssh/deploy_key.pub | cut -d' ' -f2)"
+          if ! ssh -i ~/.ssh/deploy_key -p "$SSH_PORT" -o BatchMode=yes -o ConnectTimeout=20 -o StrictHostKeyChecking=accept-new "$SSH_USER@$SSH_HOST" true 2> ~/.ssh/sshlog; then
+            echo "::error::SSH connection failed: $(tr '\n' ' ' < ~/.ssh/sshlog)"
+            exit 1
+          fi
 
       # Upload to a fresh folder, then switch the live link in one step, so visitors never see a half-copied site
       - name: Upload and switch
@@ -44,7 +57,7 @@ jobs:
           SITE_DIR: /var/www/shimaazimi.ir
         run: |
           RELEASE="$SITE_DIR/releases/$(date +%Y%m%d%H%M%S)-${GITHUB_SHA::7}"
-          SSH="ssh -i ~/.ssh/deploy_key -p $SSH_PORT -o BatchMode=yes"
+          SSH="ssh -i ~/.ssh/deploy_key -p $SSH_PORT -o BatchMode=yes -o StrictHostKeyChecking=accept-new"
           $SSH "$SSH_USER@$SSH_HOST" "mkdir -p '$RELEASE'"
           rsync -az --delete -e "$SSH" out/ "$SSH_USER@$SSH_HOST:$RELEASE/"
           $SSH "$SSH_USER@$SSH_HOST" "ln -sfn '$RELEASE' '$SITE_DIR/current' && cd '$SITE_DIR/releases' && ls -1t | tail -n +6 | xargs -r rm -rf"
