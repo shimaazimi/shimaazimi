@@ -51,10 +51,16 @@ jobs:
             exit 1
           fi
           echo "::notice::Key fingerprint $(ssh-keygen -lf ~/.ssh/deploy_key.pub | cut -d' ' -f2)"
-          if ! ssh -i ~/.ssh/deploy_key -p "$SSH_PORT" -o BatchMode=yes -o ConnectTimeout=20 -o StrictHostKeyChecking=accept-new "$SSH_USER@$SSH_HOST" true 2> ~/.ssh/sshlog; then
-            echo "::error::SSH connection failed: $(tr '\n' ' ' < ~/.ssh/sshlog)"
-            exit 1
-          fi
+          # The route to the server sometimes resets connections, so try a few times before giving up
+          for attempt in 1 2 3 4 5; do
+            if ssh -i ~/.ssh/deploy_key -p "$SSH_PORT" -o BatchMode=yes -o ConnectTimeout=20 -o StrictHostKeyChecking=accept-new "$SSH_USER@$SSH_HOST" true 2> ~/.ssh/sshlog; then
+              exit 0
+            fi
+            echo "::warning::SSH attempt $attempt failed: $(tr '\n' ' ' < ~/.ssh/sshlog)"
+            sleep $((attempt * 10))
+          done
+          echo "::error::SSH connection failed after 5 attempts: $(tr '\n' ' ' < ~/.ssh/sshlog)"
+          exit 1
 
       # Upload to a fresh folder, then switch the live link in one step, so visitors never see a half-copied site
       - name: Upload and switch
@@ -65,7 +71,9 @@ jobs:
           SITE_DIR: /var/www/shimaazimi.ir
         run: |
           RELEASE="$SITE_DIR/releases/$(date +%Y%m%d%H%M%S)-${GITHUB_SHA::7}"
-          SSH="ssh -i ~/.ssh/deploy_key -p $SSH_PORT -o BatchMode=yes -o StrictHostKeyChecking=accept-new"
-          $SSH "$SSH_USER@$SSH_HOST" "mkdir -p '$RELEASE'"
-          rsync -az --delete -e "$SSH" out/ "$SSH_USER@$SSH_HOST:$RELEASE/"
-          $SSH "$SSH_USER@$SSH_HOST" "ln -sfn '$RELEASE' '$SITE_DIR/current' && cd '$SITE_DIR/releases' && ls -1t | tail -n +6 | xargs -r rm -rf"
+          SSH="ssh -i ~/.ssh/deploy_key -p $SSH_PORT -o BatchMode=yes -o ConnectTimeout=20 -o StrictHostKeyChecking=accept-new"
+          retry() { for attempt in 1 2 3 4; do "$@" && return 0; echo "::warning::Attempt $attempt failed, retrying"; sleep $((attempt * 10)); done; return 1; }
+          retry $SSH "$SSH_USER@$SSH_HOST" "mkdir -p '$RELEASE'"
+          # rsync resumes where it left off, so a retry only sends what is missing
+          retry rsync -az --delete -e "$SSH" out/ "$SSH_USER@$SSH_HOST:$RELEASE/"
+          retry $SSH "$SSH_USER@$SSH_HOST" "ln -sfn '$RELEASE' '$SITE_DIR/current' && cd '$SITE_DIR/releases' && ls -1t | tail -n +6 | xargs -r rm -rf"
