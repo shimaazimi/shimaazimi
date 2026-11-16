@@ -3,7 +3,7 @@
 import dynamic from 'next/dynamic';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
-  about, contact, identity, journey, journeyIntro, projects, projectsIntro, services, skills, skillsIntro, ui,
+  about, articles, articlesIntro, contact, identity, journey, journeyIntro, projects, projectsIntro, services, skills, skillsIntro, ui,
   type Lang,
 } from '@/content/content';
 import { bus, STOPS } from '@/lib/bus';
@@ -158,6 +158,7 @@ export default function Portfolio() {
           <a href="#work">{ui.nav.work[lang]}</a>
           <a href="#skills">{ui.nav.skills[lang]}</a>
           <a href="#services">{ui.nav.services[lang]}</a>
+          {articles.length ? <a href="#writing">{ui.nav.writing[lang]}</a> : null}
           <a href="#contact">{ui.nav.contact[lang]}</a>
         </nav>
         <div className="controls">
@@ -252,6 +253,23 @@ export default function Portfolio() {
             ))}
           </ul>
         </section>
+
+        {articles.length ? (
+          <section className="writing" id="writing">
+            <p className="kicker reveal">{articlesIntro.kicker[lang]}</p>
+            <h2 className="title reveal">{articlesIntro.title[lang]}</h2>
+            <ul className="article-list">
+              {articles.map(a => (
+                <li className="panel article reveal" key={a.url}>
+                  <p className="meta">{a.source}{a.date ? ` · ${a.date}` : ''}</p>
+                  <h3 lang={a.lang} dir={a.lang === 'fa' ? 'rtl' : 'ltr'}>{a.title}</h3>
+                  {a.summary ? <p>{a.summary[lang]}</p> : null}
+                  <a className="go" href={a.url} target="_blank" rel="noopener noreferrer">{articlesIntro.read[lang]}<span className="sr"> {a.title}</span></a>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ) : null}
 
         <section className="skills" id="skills" data-stop>
           <div className="skills-col">

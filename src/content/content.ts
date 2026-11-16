@@ -19,6 +19,7 @@ export const ui = {
     work: { en: 'Work', fa: 'پروژه‌ها' },
     skills: { en: 'Skills', fa: 'مهارت‌ها' },
     services: { en: 'Services', fa: 'خدمات' },
+    writing: { en: 'Writing', fa: 'مقالات' },
     contact: { en: 'Contact', fa: 'تماس' },
   },
   replay: { en: 'Replay', fa: 'اجرای دوباره' } as Text,
@@ -162,7 +163,34 @@ export const projects: Project[] = [
     tools: [],
     url: 'https://friendscafe.ir',
   },
+  {
+    name: 'Noramora',
+    summary: {
+      en: 'An online store for skin care, hair care and beauty, with product guides and a free skin consultant.',
+      fa: 'فروشگاه آنلاین مراقبت پوست، مو و زیبایی، با راهنمای انتخاب محصول و مشاور پوست رایگان.',
+    },
+    tools: [],
+    url: 'https://noramora.ir',
+  },
 ];
+
+export const articlesIntro = {
+  kicker: { en: 'Writing', fa: 'مقالات' } as Text,
+  title: { en: 'Notes from the work.', fa: 'یادداشت‌هایی از دل کار.' } as Text,
+  read: { en: 'Read', fa: 'خواندن' } as Text,
+};
+
+export type Article = {
+  title: string;
+  source: string; // Where it is published, e.g. Virgool or Medium
+  lang: 'en' | 'fa'; // The language the article is written in
+  url: string;
+  date?: string;
+  summary?: Text;
+};
+
+// Add your articles here. The Writing section appears on the site as soon as this list has one.
+export const articles: Article[] = [];
 
 export const skillsIntro = {
   kicker: { en: 'Skills', fa: 'مهارت‌ها' } as Text,

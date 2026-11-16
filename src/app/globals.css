@@ -155,6 +155,17 @@ html[lang="fa"] .tools { justify-content: flex-end; }
 html[dir="rtl"] .project a.go::after { content: ' ←'; }
 .project a.go:hover { color: var(--coral); }
 
+/* Writing */
+.writing { padding-block: 12vh; }
+.article-list { margin-top: clamp(24px, 4vw, 40px); display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); gap: 14px; }
+.article { display: flex; flex-direction: column; }
+.article .meta { font-size: 12px; color: var(--coral); }
+.article h3 { margin-top: 6px; font-size: clamp(20px, 2vw, 26px); font-weight: 300; line-height: 1.35; }
+.article p:not(.meta) { margin-top: 8px; font-size: 14.5px; color: #c7d8ee; }
+.article a.go { margin-top: auto; padding-top: 14px; font-size: 13px; text-decoration: none; align-self: flex-start; }
+.article a.go::after { content: ' →'; color: var(--coral); }
+html[dir="rtl"] .article a.go::after { content: ' ←'; }
+
 /* Skills */
 .skills { min-height: 110vh; padding-block: 16vh 14vh; display: flex; align-items: center; }
 .skills-col { width: min(100%, 500px); }
