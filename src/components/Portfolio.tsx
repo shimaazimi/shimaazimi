@@ -260,11 +260,16 @@ export default function Portfolio() {
             <h2 className="title reveal">{articlesIntro.title[lang]}</h2>
             <ul className="article-list">
               {articles.map(a => (
-                <li className="panel article reveal" key={a.url}>
-                  <p className="meta">{a.source}{a.date ? ` · ${a.date}` : ''}</p>
+                <li className="panel article reveal" key={a.title}>
+                  <p className="meta" dir="ltr">{a.source}{a.date ? ` · ${a.date}` : ''}</p>
                   <h3 lang={a.lang} dir={a.lang === 'fa' ? 'rtl' : 'ltr'}>{a.title}</h3>
+                  {a.authors ? <p className="authors" dir="ltr">{a.authors}</p> : null}
                   {a.summary ? <p>{a.summary[lang]}</p> : null}
-                  <a className="go" href={a.url} target="_blank" rel="noopener noreferrer">{articlesIntro.read[lang]}<span className="sr"> {a.title}</span></a>
+                  {a.status ? <p>{a.status[lang]}</p> : null}
+                  <div className="article-links">
+                    {a.url ? <a className="go" href={a.url} target="_blank" rel="noopener noreferrer">{articlesIntro.read[lang]}<span className="sr"> {a.title}</span></a> : null}
+                    {a.certificate ? <a className="go" href={a.certificate} target="_blank" rel="noopener noreferrer">{articlesIntro.certificate[lang]}</a> : null}
+                  </div>
                 </li>
               ))}
             </ul>

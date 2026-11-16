@@ -175,22 +175,39 @@ export const projects: Project[] = [
 ];
 
 export const articlesIntro = {
-  kicker: { en: 'Writing', fa: 'مقالات' } as Text,
-  title: { en: 'Notes from the work.', fa: 'یادداشت‌هایی از دل کار.' } as Text,
+  kicker: { en: 'Research & writing', fa: 'پژوهش و مقالات' } as Text,
+  title: { en: 'Beyond the interface.', fa: 'فراتر از رابط کاربری.' } as Text,
   read: { en: 'Read', fa: 'خواندن' } as Text,
+  certificate: { en: 'View certificate', fa: 'مشاهده‌ی گواهی' } as Text,
 };
 
 export type Article = {
   title: string;
   source: string; // Where it is published, e.g. Virgool or Medium
   lang: 'en' | 'fa'; // The language the article is written in
-  url: string;
   date?: string;
+  authors?: string;
   summary?: Text;
+  status?: Text;
+  url?: string;
+  certificate?: string; // Image in /public/certificates
 };
 
 // Add your articles here. The Writing section appears on the site as soon as this list has one.
-export const articles: Article[] = [];
+export const articles: Article[] = [
+  {
+    title: 'A Critical Review of Machine Learning and Deep Learning Applications in Disease Diagnosis: From Laboratory Accuracy to Clinical Readiness',
+    source: '31st National Conference on Computer Science and Engineering and Information Technology (NCCIT)',
+    lang: 'en',
+    date: '2026',
+    authors: 'Sina Asghari, Shima Azimi',
+    status: {
+      en: 'Accepted for oral presentation and publication in the conference proceedings. Paper code NCCIT-154031.',
+      fa: 'پذیرفته‌شده برای ارائه‌ی سخنرانی و چاپ در مجموعه‌مقالات کنفرانس. کد مقاله ⁦NCCIT‑154031⁩.',
+    },
+    certificate: '/certificates/nccit-2026.webp',
+  },
+];
 
 export const skillsIntro = {
   kicker: { en: 'Skills', fa: 'مهارت‌ها' } as Text,

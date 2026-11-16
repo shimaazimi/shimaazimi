@@ -162,7 +162,10 @@ html[dir="rtl"] .project a.go::after { content: ' ←'; }
 .article .meta { font-size: 12px; color: var(--coral); }
 .article h3 { margin-top: 6px; font-size: clamp(20px, 2vw, 26px); font-weight: 300; line-height: 1.35; }
 .article p:not(.meta) { margin-top: 8px; font-size: 14.5px; color: #c7d8ee; }
-.article a.go { margin-top: auto; padding-top: 14px; font-size: 13px; text-decoration: none; align-self: flex-start; }
+.article .authors { margin-top: 6px; font-size: 13px; color: var(--muted); text-align: start; }
+html[dir="rtl"] .article .meta, html[dir="rtl"] .article .authors { text-align: right; }
+.article-links { margin-top: auto; padding-top: 14px; display: flex; flex-wrap: wrap; gap: 18px; }
+.article a.go { font-size: 13px; text-decoration: none; }
 .article a.go::after { content: ' →'; color: var(--coral); }
 html[dir="rtl"] .article a.go::after { content: ' ←'; }
 
