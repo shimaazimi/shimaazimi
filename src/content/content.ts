@@ -200,7 +200,6 @@ export const articles: Article[] = [
     source: '31st National Conference on Computer Science and Engineering and Information Technology (NCCIT)',
     lang: 'en',
     date: '2026',
-    authors: 'Sina Asghari, Shima Azimi',
     status: {
       en: 'Accepted for oral presentation and publication in the conference proceedings. Paper code NCCIT-154031.',
       fa: 'پذیرفته‌شده برای ارائه‌ی سخنرانی و چاپ در مجموعه‌مقالات کنفرانس. کد مقاله ⁦NCCIT‑154031⁩.',
